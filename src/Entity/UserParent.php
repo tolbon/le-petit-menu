@@ -24,12 +24,12 @@ class UserParent implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private $username;
+    private string $username;
 
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
      * @var string The hashed password
@@ -39,12 +39,13 @@ class UserParent implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Child::class, mappedBy="userParent", orphanRemoval=true)
+     * @var ArrayCollection<int, Child>
      */
-    private $childs;
+    private $children;
 
     public function __construct()
     {
-        $this->childs = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -134,15 +135,15 @@ class UserParent implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection|Child[]
      */
-    public function getChilds(): Collection
+    public function getChildren(): Collection
     {
-        return $this->childs;
+        return $this->children;
     }
 
     public function addChild(Child $child): self
     {
-        if (!$this->childs->contains($child)) {
-            $this->childs[] = $child;
+        if (!$this->children->contains($child)) {
+            $this->children[] = $child;
             $child->setUserParent($this);
         }
 
@@ -151,7 +152,7 @@ class UserParent implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeChild(Child $child): self
     {
-        if ($this->childs->removeElement($child)) {
+        if ($this->children->removeElement($child)) {
             // set the owning side to null (unless already changed)
             if ($child->getUserParent() === $this) {
                 $child->setUserParent(null);
